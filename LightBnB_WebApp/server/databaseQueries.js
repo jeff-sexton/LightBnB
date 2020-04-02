@@ -18,9 +18,6 @@ const getUserWithEmail = function(email) {
         return null;
       }
       return res.rows[0];
-    })
-    .catch(err => {
-      throw err;
     });
 };
 exports.getUserWithEmail = getUserWithEmail;
@@ -41,9 +38,6 @@ const getUserWithId = function(id) {
         return null;
       }
       return res.rows[0];
-    })
-    .catch(err => {
-      throw err;
     });
 };
 exports.getUserWithId = getUserWithId;
@@ -65,9 +59,6 @@ const addUser =  function(user) {
         return null;
       }
       return res.rows[0];
-    })
-    .catch(err => {
-      throw err;
     });
 };
 exports.addUser = addUser;
@@ -98,9 +89,6 @@ const getAllReservations = function(guestId, limit = 10) {
         return null;
       }
       return res.rows;
-    })
-    .catch(err => {
-      throw err;
     });
 };
 exports.getAllReservations = getAllReservations;
@@ -179,9 +167,6 @@ const getAllProperties = function(options, limit = 10) {
         return null;
       }
       return res.rows;
-    })
-    .catch(err => {
-      throw err;
     });
 };
 exports.getAllProperties = getAllProperties;
@@ -193,22 +178,21 @@ exports.getAllProperties = getAllProperties;
  */
 const addProperty = function(property) {
   const queryParams = [
-    property.owner_id,
-    property.title,
-    property.description,
-    property.thumbnail_photo_url,
-    property.cover_photo_url,
+    property.owner_id || null,
+    property.title || null,
+    property.description || null,
+    property.thumbnail_photo_url || null,
+    property.cover_photo_url || null,
     Math.round(Number(property.cost_per_night) * 100),
-    property.street,
-    property.city,
-    property.province,
-    property.post_code,
-    property.country,
-    property.parking_spaces,
-    property.number_of_bathrooms,
-    property.number_of_bedrooms
+    property.street || null,
+    property.city || null,
+    property.province || null,
+    property.post_code || null,
+    property.country || null,
+    Number(property.parking_spaces),
+    Number(property.number_of_bathrooms),
+    Number(property.number_of_bedrooms)
   ];
-
 
   return db.query(`
   INSERT INTO properties (
