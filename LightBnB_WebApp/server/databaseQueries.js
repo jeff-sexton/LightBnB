@@ -1,21 +1,4 @@
-require('dotenv').config(); // Add DB environment variables
-
-const user = process.env.DB_USER || 'vagrant';
-const password = process.env.DB_PASSWORD || '123';
-const host = process.env.DB_HOST || 'localhost';
-const database = process.env.DB_DATABASE || 'lightbnb';
-
-const { Pool } = require('pg');
-const pool = new Pool({
-  user,
-  password,
-  host,
-  database
-});
-
-pool.connect(err => {
-  if (err) throw err;
-});
+const db = require('./db');
 
 /// Users
 
@@ -25,7 +8,7 @@ pool.connect(err => {
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithEmail = function(email) {
-  return pool.query(`
+  return db.query(`
   SELECT *
   FROM users
   WHERE email = $1;
@@ -48,7 +31,7 @@ exports.getUserWithEmail = getUserWithEmail;
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithId = function(id) {
-  return pool.query(`
+  return db.query(`
   SELECT *
   FROM users
   WHERE id = $1;
@@ -72,7 +55,7 @@ exports.getUserWithId = getUserWithId;
  * @return {Promise<{}>} A promise to the user.
  */
 const addUser =  function(user) {
-  return pool.query(`
+  return db.query(`
   INSERT INTO users (name, password, email)
   VALUES ($1, $2, $3)
   RETURNING *;
@@ -97,7 +80,7 @@ exports.addUser = addUser;
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = function(guestId, limit = 10) {
-  return pool.query(`
+  return db.query(`
   SELECT properties.*,
   reservations.*,
   AVG(rating) AS average_rating
@@ -190,7 +173,7 @@ const getAllProperties = function(options, limit = 10) {
       LIMIT $${queryParams.length};
       `;
 
-  return pool.query(queryString, queryParams)
+  return db.query(queryString, queryParams)
     .then(res => {
       if (res.rows.length === 0) {
         return null;
@@ -226,7 +209,8 @@ const addProperty = function(property) {
     property.number_of_bedrooms
   ];
 
-  return pool.query(`
+
+  return db.query(`
   INSERT INTO properties (
     owner_id,
     title,
@@ -266,9 +250,6 @@ const addProperty = function(property) {
         return null;
       }
       return res.rows[0];
-    })
-    .catch(err => {
-      throw err;
     });
 };
 exports.addProperty = addProperty;
