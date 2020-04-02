@@ -53,7 +53,7 @@ const addUser =  function(user) {
   INSERT INTO users (name, password, email)
   VALUES ($1, $2, $3)
   RETURNING *;
-  `, [user.name, user.password, user.email])
+  `, [user.name || null, user.password || null, user.email || null])
     .then(res => {
       if (res.rows.length === 0) {
         return null;
