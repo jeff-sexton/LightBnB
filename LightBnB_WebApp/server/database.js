@@ -1,7 +1,7 @@
 require('dotenv').config(); // Add DB environment variables
 
 const properties = require('./json/properties.json');
-const users = require('./json/users.json');
+// const users = require('./json/users.json');
 
 const user = process.env.DB_USER || 'vagrant';
 const password = process.env.DB_PASSWORD || '123';
@@ -18,7 +18,6 @@ const pool = new Pool({
 
 pool.connect(err => {
   if (err) throw err;
-  console.log('database connected');
 });
 
 /// Users
@@ -82,7 +81,6 @@ const addUser =  function(user) {
   RETURNING *;
   `, [user.name, user.password, user.email])
     .then(res => {
-      console.log(res.rows);
       if (res.rows.length === 0) {
         return null;
       }
@@ -101,8 +99,29 @@ exports.addUser = addUser;
  * @param {string} guest_id The id of the user.
  * @return {Promise<[{}]>} A promise to the reservations.
  */
-const getAllReservations = function(guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+const getAllReservations = function(guestId, limit = 10) {
+  return pool.query(`
+  SELECT properties.*,
+  reservations.*,
+  AVG(rating) AS average_rating
+  FROM reservations
+  JOIN properties ON reservations.property_id = properties.id
+  JOIN property_reviews on properties.id = property_reviews.property_id
+  WHERE reservations.guest_id = $1
+  AND reservations.end_date < now()::date
+  GROUP BY properties.id, reservations.id
+  ORDER BY reservations.start_date
+  LIMIT $2;
+  `, [guestId, limit])
+    .then(res => {
+      if (res.rows.length === 0) {
+        return null;
+      }
+      return res.rows;
+    })
+    .catch(err => {
+      throw err;
+    });
 };
 exports.getAllReservations = getAllReservations;
 
