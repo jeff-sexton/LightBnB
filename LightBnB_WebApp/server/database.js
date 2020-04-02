@@ -1,9 +1,25 @@
+require('dotenv').config(); // Add DB environment variables
+
 const properties = require('./json/properties.json');
 const users = require('./json/users.json');
 
-const { Pool } = require('pg');
+const user = process.env.DB_USER || 'vagrant';
+const password = process.env.DB_PASSWORD || '123';
+const host = process.env.DB_HOST || 'localhost';
+const database = process.env.DB_DATABASE || 'lightbnb';
 
-// const pool = new Pool();
+const { Pool } = require('pg');
+const pool = new Pool({
+  user,
+  password,
+  host,
+  database
+});
+
+pool.connect(err => {
+  if (err) throw err;
+  console.log('database connected');
+});
 
 /// Users
 
