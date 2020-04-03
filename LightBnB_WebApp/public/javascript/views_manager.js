@@ -1,3 +1,16 @@
+/* eslint-disable camelcase */
+/* eslint-disable indent */
+/* eslint-disable func-style */
+/*eslint-env jquery*/
+/* global window */
+/* global $newPropertyForm */
+/* global $propertyListings */
+/* global $searchPropertyForm */
+/* global $logInForm */
+/* global $signUpForm */
+/* global $reserveForm */
+/* global views_manager */
+
 $(() => {
 
   const $main = $('#main-content');
@@ -10,6 +23,7 @@ $(() => {
     $searchPropertyForm.detach();
     $logInForm.detach();
     $signUpForm.detach();
+    $reserveForm.detach();
 
     switch (item) {
       case 'listings':
@@ -27,6 +41,9 @@ $(() => {
       case 'signUp':
         $signUpForm.appendTo($main);
         break;
+      case 'makeReservation':
+        $reserveForm.appendTo($main);
+        break;
       case 'error': {
         const $error = $(`<p>${arguments[1]}</p>`);
         $error.appendTo('body');
@@ -38,6 +55,6 @@ $(() => {
         break;
       }
     }
-  }
+  };
   
 });

@@ -1,3 +1,11 @@
+/* eslint-disable camelcase */
+/* eslint-disable indent */
+/* eslint-disable func-style */
+/*eslint-env jquery*/
+/* global window */
+/* global propertyListing */
+/* global views_manager */
+
 $(() => {
 
   const $propertyListings = $(`
@@ -23,6 +31,14 @@ $(() => {
       const property = properties[propertyId];
       const listing = propertyListing.createListing(property, isReservation);
       addListing(listing);
+      console.log(listing);
+      const $button = $($propertyListings).children().last('article').find('.reserve-button');
+      console.log($button);
+      $($button).on('click', function() {
+        console.log('click'); // Is this attaching hanglers properly?
+        views_manager.show('makeReservation');
+        return false;
+      });
     }
   }
   window.propertyListings.addProperties = addProperties;
