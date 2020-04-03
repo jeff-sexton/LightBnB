@@ -65,6 +65,27 @@ exports.addUser = addUser;
 
 /// Reservations
 
+
+/**
+ * Add a new reservation to the database.
+ * @param {{}} reservation An object containing all of the reservation details.
+ * @return {Promise<{}>} A promise to the reservation.
+ */
+const addReservation =  function(reservation) {
+  return db.query(`
+  INSERT INTO reservations (start_date, end_date, property_id, guest_id)
+  VALUES ($1, $2, $3, $4)
+  RETURNING *;
+  `, [reservation.start_date || null, reservation.end_date || null, Number(reservation.property_id) || null, reservation.guest_id])
+    .then(res => {
+      if (res.rows.length === 0) {
+        return null;
+      }
+      return res.rows[0];
+    });
+};
+exports.addReservation = addReservation;
+
 /**
  * Get all reservations for a single user.
  * @param {string} guest_id The id of the user.
@@ -79,7 +100,7 @@ const getAllReservations = function(guestId, limit = 10) {
   JOIN properties ON reservations.property_id = properties.id
   JOIN property_reviews on properties.id = property_reviews.property_id
   WHERE reservations.guest_id = $1
-  AND reservations.end_date < now()::date
+  AND reservations.start_date >= now()::date
   GROUP BY properties.id, reservations.id
   ORDER BY reservations.start_date
   LIMIT $2;
@@ -102,7 +123,7 @@ exports.getAllReservations = getAllReservations;
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = function(options, limit = 10) {
-
+  
   const buildWhereBasedOnParamLength = (params) => {
     if (params.length > 1) {
       return `
@@ -132,6 +153,12 @@ const getAllProperties = function(options, limit = 10) {
     queryParams.push(Number(options.owner_id));
     queryString += buildWhereBasedOnParamLength(queryParams);
     queryString += `owner_id = $${queryParams.length}`;
+  }
+
+  if (options.propertyId) {
+    queryParams.push(Number(options.propertyId));
+    queryString += buildWhereBasedOnParamLength(queryParams);
+    queryString += `properties.id = $${queryParams.length}`;
   }
 
   if (options.minimum_price_per_night) {

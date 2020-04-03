@@ -8,7 +8,6 @@
 /* global $searchPropertyForm */
 /* global $logInForm */
 /* global $signUpForm */
-/* global $reserveForm */
 /* global views_manager */
 
 $(() => {
@@ -23,7 +22,6 @@ $(() => {
     $searchPropertyForm.detach();
     $logInForm.detach();
     $signUpForm.detach();
-    $reserveForm.detach();
 
     switch (item) {
       case 'listings':
@@ -40,9 +38,6 @@ $(() => {
         break;
       case 'signUp':
         $signUpForm.appendTo($main);
-        break;
-      case 'makeReservation':
-        $reserveForm.appendTo($main);
         break;
       case 'error': {
         const $error = $(`<p>${arguments[1]}</p>`);

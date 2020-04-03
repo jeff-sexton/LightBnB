@@ -8,7 +8,7 @@
   margin: 20px 0;
   width: 100%;
   max-width: 600px;
-  height: 200px;
+  height: auto;
   border: 1px solid black;
   box-sizing: border-box;
   display: flex;
@@ -20,7 +20,8 @@
     font-size: 1.0rem; }
   .property-listing__preview-image {
     overflow: hidden;
-    max-width: 50%; }
+    max-width: 50%;
+    max-height: 200px; }
     .property-listing__preview-image img {
       min-width: 100%;
       height: 100%;
